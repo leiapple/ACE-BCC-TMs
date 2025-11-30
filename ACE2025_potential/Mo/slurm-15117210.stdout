@@ -1,0 +1,19 @@
+         Current function value: 0.000134
+         Iterations: 2000
+         Function evaluations: 2024
+         Gradient evaluations: 2024
+Fitting took 2433.22 seconds
+
+JOB STATISTICS
+==============
+Job ID: 15117210
+Cluster: snellius
+User/Group: zhanglei1/zhanglei1
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 16
+CPU Utilized: 01:58:30
+CPU Efficiency: 18.06% of 10:56:16 core-walltime
+Job Wall-clock time: 00:41:01
+Memory Utilized: 5.17 GB
+Memory Efficiency: 2.87% of 180.00 GB (180.00 GB/node)

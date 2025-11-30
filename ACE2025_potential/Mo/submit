@@ -1,0 +1,13 @@
+#!/bin/bash
+#SBATCH --job-name=ace-Mo
+#SBATCH --partition=gpu_h100
+#SBATCH --gpus-per-node=1
+#SBATCH --time=3:00:00
+#SBATCH --error=slurm-%j.stderr
+#SBATCH --output=slurm-%j.stdout
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=lei.zhang@rug.nl
+
+source ~/software/pace_pip_gpu_2025/bin/activate
+
+pacemaker input.yaml --verbose-tf
