@@ -1,1 +1,55 @@
+# macOS
 .DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Virtual environments (uv specific)
+.venv/
+pace/
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+*.swp
+
+# Jupyter/Marimo
+.ipynb_checkpoints/
+.marimo/
+__marimo__/
+*.ipynb
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Project specific
+*.log
+*.pid
+*.seed
+*.pid.lock
+
+# Data files (optional - adjust as needed)
+*.npy
+*.csv
+*.h5
