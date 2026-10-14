@@ -1,0 +1,2 @@
+pair_style  pace/extrapolation
+pair_coeff  * * ../../ACE2025_potential/Mo/output_potential.yaml ../../ACE2025_potential/Mo/output_potential.asi Mo

@@ -32,11 +32,8 @@ pace/
 *.sublime-*
 *.swp
 
-# Jupyter/Marimo
+# Jupyter
 .ipynb_checkpoints/
-.marimo/
-__marimo__/
-*.ipynb
 
 # Testing
 .pytest_cache/
@@ -53,3 +50,7 @@ htmlcov/
 *.npy
 *.csv
 *.h5
+
+
+# VASP pseudopotentials (licensed, do not commit)
+POTCAR

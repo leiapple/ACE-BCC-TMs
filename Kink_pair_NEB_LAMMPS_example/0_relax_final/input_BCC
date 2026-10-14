@@ -1,0 +1,139 @@
+# Francesco Maresca, February 2023
+# f.maresca@rug.nl
+
+#---- Initialize simulation ------------------
+clear
+units metal
+dimension 3
+boundary p p s
+atom_style atomic
+
+read_data final.data
+
+#---- Define Interatomic Potential -----------
+include ../potential.in
+mass * 95.95
+
+compute eng all pe/atom
+compute eatoms all reduce sum c_eng
+
+#---- Define Interatomic Potential -----------
+variable dimx equal 0.5*lx
+variable dimy equal 0.5*ly
+variable dimz equal 0.5*lz
+
+variable dimymin equal ${dimy}+0.2
+variable dimymax equal ${dimy}+0.2
+
+variable dimxmin equal ${dimx}/4+0.2
+variable dimxmax equal ${dimx}/6+0.2
+
+variable dimzmin equal ${dimz}/2+0.2
+variable dimzmax equal ${dimz}/3+0.2
+
+variable dimz_inf equal lz/2+2
+variable dimz_sup equal lz/2+2
+
+variable dimy_inf equal ly/2+2
+variable dimy_sup equal ly/2+2
+
+variable dimx_inf equal lx/2+2
+variable dimx_sup equal lx/2+2
+
+region  1 prism -${dimx_inf} ${dimx_sup} -${dimy_inf} ${dimy_sup} -${dimz_inf} ${dimz_sup} 0.0 0.0 0.0 units box
+
+variable z_sup2 equal 0.35*lz
+variable z_inf2 equal -0.40*lz
+
+region 6 plane 0 0 ${z_sup2} 0 0 1 units box
+region 7 plane 0 0 ${z_inf2} 0 0 -1 units box
+
+region top2 intersect 2 1 6
+region bot2 intersect 2 1 7
+
+group a_top2 region top2
+group a_bot2 region bot2
+
+#
+variable ntop equal count(a_top2)
+variable nbot equal count(a_bot2)
+
+#----- Define applied stress
+
+variable tau_app equal 200 # Units: MPa
+
+variable rtop_0 equal  -1*lx*ly/(v_ntop*160218)
+variable rbot_0 equal  lx*ly/(v_nbot*160218)
+
+#---- NEB analysis
+
+variable rtop equal v_tau_app*v_rtop_0
+variable rbot equal v_tau_app*v_rbot_0
+
+compute top_disp a_top2 displace/atom
+compute bot_disp a_bot2 displace/atom
+
+variable enperat_slab_top atom -c_top_disp[2]*v_rtop
+variable enperat_slab_bot atom -c_bot_disp[2]*v_rbot
+
+fix 11 a_top2 addforce 0.0 v_rtop 0.0 energy v_enperat_slab_top
+fix 12 a_bot2 addforce 0.0 v_rbot 0.0 energy v_enperat_slab_bot
+fix_modify 11 energy yes
+fix_modify 12 energy yes
+
+#---- dump for post processing ---------------
+dump 1 all custom 1000 dump.screw.* id type x y z c_eng fx fy fz
+
+thermo 10
+thermo_style custom step pe lx ly lz press pxx pyy pzz pxy pxz pyz fnorm
+min_style fire
+minimize 0 1e-4 50000 200000
+
+#---- Run Minimization -----------------------
+reset_timestep 0
+fix 1 all box/relax x 0.0 y 0.0 xy 0.0 vmax 0.01
+thermo 10
+
+variable k loop 10
+label loop_screw
+
+variable tol equal 100
+variable i loop 100
+
+label loop_head2
+
+fix 1 all box/relax x 0.0 y 0.0 xy 0.0 vmax 0.01
+thermo 10
+thermo_style custom step pe lx ly lz press pxx pyy pzz pxy pxz pyz c_eatoms fnorm
+min_style cg
+minimize 1e-15 1e-9 100 20000
+
+variable press_x equal abs(pxx)
+variable press_y equal abs(pyy)
+variable press_xy equal abs(pxy)
+
+if "${press_x} < ${tol} && ${press_y} < ${tol} && ${press_xy} < ${tol}" then "jump input_BCC exit_label3"
+
+next i
+jump input_BCC loop_head2
+
+label exit_label3
+
+unfix 1
+
+thermo 10
+thermo_style custom step pe lx ly lz press pxx pyy pzz pxy pxz pyz c_eatoms fnorm
+min_style fire
+minimize 0 1e-4 50000 200000
+
+#undump 1
+
+next k
+jump input_BCC loop_screw
+
+write_restart restart.screw
+
+#---- End of simulation
+print "Plastic work ${enperat_slab_top} and ${enperat_slab_bot}"
+# SIMULATION DONE
+print "All done!"

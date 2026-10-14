@@ -1,45 +1,33 @@
 # LT Model
 
-This folder contains a small [marimo](https://marimo.io/) notebook app for exploring the line-tension (LT) model used to predict kink-pair formation energies in bcc transition metals.
+This folder contains a Jupyter notebook for the line-tension (LT) model of Dorn and Rajnak, used to predict the stress-dependent kink-pair nucleation enthalpy ΔH*(τ) of screw dislocations in bcc transition metals.
 
 ## Files
 
-- `LT_model.py`: the source notebook as a marimo app. It defines the LT-model helper functions, solves for `R` and `alpha` from MD-derived inputs, and plots the predicted `ΔH*(τ)` curves for selected elements.
-- `LT_model.html`: an exported standalone HTML view of the notebook output. This is useful for sharing results without requiring Python or marimo.
-- `__marimo__/`: marimo runtime metadata created while editing or running the notebook locally. This folder is machine-generated and is ignored by git.
+- `LT_model.ipynb`: defines the LT-model helper functions, determines the line-energy ratio `R` and the Peierls-potential shape parameter `alpha` from atomistic inputs (zero-stress kink-pair formation enthalpy ΔH*(0), Peierls barrier ΔE_P, lattice parameter a0, and Peierls stress τ_P), and plots the predicted ΔH*(τ) curves for Nb, Mo, and W.
+  It also fits Kocks' law, ΔH*(τ) = ΔH*(0)[1 − (τ/τ_P)^p]^q, to the 3D NEB enthalpies and reproduces Fig. 11 and Table VI of the paper.
 
-## Why marimo is used here
+## Inputs (ACE-2025, T = 0 K)
 
-marimo is a Python notebook environment that stores notebooks as plain `.py` files instead of JSON documents. That makes it a good fit for this repository because:
+| Element | ΔH*(0) (eV) | ΔE_P (eV/b) | a0 (Å) | τ_P (GPa) |
+|---|---|---|---|---|
+| Nb | 0.722 | 0.0449 | 3.308165 | 1.375 |
+| Mo | 1.073 | 0.0576 | 3.163423 | 1.525 |
+| W  | 1.488 | 0.0986 | 3.186619 | 2.875 |
 
-- the notebook source is readable and version-controllable,
-- diffs are much cleaner than traditional notebook files,
-- code, markdown, and plots stay together in one executable script,
-- the HTML export can be shared separately from the editable source.
+## Results (Table VI)
+
+| Element | p | q | α | Γ_0 (eV/Å) |
+|---|---|---|---|---|
+| Nb | 0.865 | 1.613 | −1.114 | 2.534 |
+| Mo | 0.742 | 1.149 | −0.203 | 2.712 |
+| W  | 0.854 | 1.633 | −0.631 | 3.621 |
+
+The 3D NEB data are computed with the LAMMPS workflow in [`../Kink_pair_NEB_LAMMPS_example`](../Kink_pair_NEB_LAMMPS_example).
 
 ## Running the notebook
 
-Create or activate a Python environment with the required packages:
-
 ```bash
-pip install marimo numpy scipy matplotlib
+pip install numpy scipy matplotlib jupyter
+jupyter notebook LT_model.ipynb
 ```
-
-Then start the notebook app from this directory:
-
-```bash
-marimo edit LT_model.py
-```
-
-If you just want to run it as a script:
-
-```bash
-python LT_model.py
-```
-
-## Workflow
-
-1. Edit `LT_model.py` in marimo.
-2. Re-run the cells to update plots and derived quantities.
-3. Export or refresh `LT_model.html` when you want a shareable snapshot of the current notebook output.
-4. Do not commit `__marimo__/` contents; they are local session artifacts.

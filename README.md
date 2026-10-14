@@ -14,9 +14,10 @@ The current materials covered here are:
 
 - `ACE2020_potential/`: ACE potential inputs, fitted outputs, and database files for the 2020 potential set.
 - `ACE2025_potential/`: ACE potential inputs, fitted outputs, and database files for the 2025 potential set.
-- `BCC_Screw_Dislocation/`: Python scripts for building and analyzing bcc screw-dislocation configurations.
+- `BCC_Screw_Dislocation/`: Python scripts for building and analyzing bcc screw-dislocation configurations, including the Peierls barrier (NEB) and core trajectory.
 - `VASP_inp_expample/`: example VASP input templates and helper scripts for collecting and post-processing calculation outputs.
-- `LT_model/`: a marimo-based notebook app and exported HTML for exploring the line-tension model and plotting predicted kink-pair formation energies.
+- `Kink_pair_NEB_LAMMPS_example/`: example LAMMPS inputs for the kink-pair NEB calculations under applied shear stress.
+- `LT_model/`: a Jupyter notebook for the line-tension model, the Kocks' law fit, and the predicted kink-pair nucleation enthalpies.
 
 ## Main contents
 
@@ -35,44 +36,39 @@ The `BCC_Screw_Dislocation/` folder contains Python tools for constructing and a
 
 ### VASP examples
 
-The `VASP_inp_expample/` folder provides example workflows for primitive-cell calculations and output collection, including template `INCAR` and `POTCAR` files and helper shell/Python scripts.
+The `VASP_inp_expample/` folder provides example workflows for primitive-cell calculations and output collection, including a template `INCAR` and helper shell/Python scripts. POTCAR files are not included because of the VASP license; the required potentials are listed in `VASP_inp_expample/INPUTS_temp/POTCAR_README.md`.
+
+### Peierls barrier and core trajectory
+
+The `BCC_Screw_Dislocation/` folder also contains the NEB workflow for the Peierls barrier of the screw-dislocation dipole and the stress-method analysis of the core trajectory and deviation angle (`peierls_neb.py`). See [BCC_Screw_Dislocation/README.md](BCC_Screw_Dislocation/README.md).
+
+### Kink-pair NEB calculations
+
+The `Kink_pair_NEB_LAMMPS_example/` folder contains an example LAMMPS workflow (Mo, τ = 200 MPa) for computing the kink-pair nucleation enthalpy, including how the applied shear stress is imposed with `fix addforce` and how its work is subtracted with `fix_modify energy`. See [Kink_pair_NEB_LAMMPS_example/README.md](Kink_pair_NEB_LAMMPS_example/README.md).
 
 ### Line-tension model
 
-The `LT_model/` folder contains:
-
-- `LT_model.py`: the editable marimo notebook source
-- `LT_model.html`: a shareable HTML export of the notebook
-- `README.md`: notes on the LT-model workflow and how marimo is used in this project
-
-For more detail, see [LT_model/README.md](/Users/leizhang/Nextcloud/G_github/ACE-BCC-TMs/LT_model/README.md).
+The `LT_model/` folder contains `LT_model.ipynb`, a Jupyter notebook that fits the line-tension model to the atomistic kink-pair enthalpy and Peierls stress and plots ΔH*(τ). For more detail, see [LT_model/README.md](LT_model/README.md).
 
 ## Using the repository
 
 Most analysis scripts are written in Python. The exact dependencies vary by workflow, but common packages used in this repository include:
 
 ```bash
-pip install numpy scipy matplotlib marimo
+pip install numpy scipy matplotlib jupyter
 ```
 
 To work with the line-tension notebook:
 
 ```bash
 cd LT_model
-marimo edit LT_model.py
-```
-
-To run it directly as a Python app:
-
-```bash
-python LT_model.py
+jupyter notebook LT_model.ipynb
 ```
 
 ## Notes
 
-- Generated marimo session files under `__marimo__/` are local runtime artifacts and should not be committed.
 - Large fitting outputs and database files are kept in the repository because they are part of the scientific workflow and reference data.
 
 ## License
 
-This repository is distributed under the terms of the license in [LICENSE](/Users/leizhang/Nextcloud/G_github/ACE-BCC-TMs/LICENSE).
+This repository is distributed under the terms of the license in [LICENSE](LICENSE).
